@@ -1,6 +1,8 @@
 import app from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
+import 'firebase/firestore'
+import * as firebaseui from 'firebaseui'
 
 const config = {
 	apiKey: process.env.REACT_APP_API_KEY,
@@ -15,20 +17,24 @@ class Firebase {
 	serverValue: typeof app.database.ServerValue
 	emailAuthProvider: typeof app.auth.EmailAuthProvider
 	auth: app.auth.Auth
-	db: app.database.Database
+	db: app.firestore.Firestore
 	googleProvider: app.auth.GoogleAuthProvider
+	ui: firebaseui.auth.AuthUI
+	app: app.app.App
 
 	constructor() {
-		app.initializeApp(config)
+		this.app = app.initializeApp(config)
 
 		this.serverValue = app.database.ServerValue
 		this.emailAuthProvider = app.auth.EmailAuthProvider
 
 		this.auth = app.auth()
-		this.db = app.database()
-
+		this.db = app.firestore()
+		this.ui = new firebaseui.auth.AuthUI(this.auth)
 		this.googleProvider = new app.auth.GoogleAuthProvider()
 	}
+
+	currentUser = () => this.app.auth().currentUser
 
 	doCreateUserWithEmailAndPassword = (email: string, password: string) =>
 		this.auth.createUserWithEmailAndPassword(email, password)
@@ -40,33 +46,35 @@ class Firebase {
 
 	doSignOut = () => this.auth.signOut()
 
+	addWorkout = (workout: { exercises: { name: string; weight: number }[] }) =>
+		this.db.collection('workouts').add(workout)
+
+	getWorkouts = () => this.db.collection('workouts').get()
+
 	onAuthUserListener = (next: (v: any) => void, fallback: () => void) => {
 		this.auth.onAuthStateChanged((authUser) => {
 			if (authUser) {
-				this.user(authUser.uid).once('value').then((snapshot) => {
-					const dbUser = snapshot.val()
-
-					if (!dbUser.roles) {
-						dbUser.roles = {}
-					}
-
-					authUser = {
-						uid: authUser?.uid,
-						email: authUser?.email,
-						emailVerified: authUser?.emailVerified,
-						providerData: authUser?.providerData,
-						...dbUser
-					}
-
-					next(authUser)
-				})
+				// this.user(authUser.uid).once('value').then((snapshot) => {
+				// 	const dbUser = snapshot.val()
+				// 	if (!dbUser.roles) {
+				// 		dbUser.roles = {}
+				// 	}
+				// 	authUser = {
+				// 		uid: authUser?.uid,
+				// 		email: authUser?.email,
+				// 		emailVerified: authUser?.emailVerified,
+				// 		providerData: authUser?.providerData,
+				// 		...dbUser
+				// 	}
+				// 	next(authUser)
+				// })
 			} else {
 				fallback()
 			}
 		})
 	}
 
-	user = (id: string) => this.db.ref(`users/${id}`)
+	// user = (id: string) => this.db.ref(`users/${id}`)
 }
 
-export default Firebase;
+export default Firebase

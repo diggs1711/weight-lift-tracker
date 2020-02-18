@@ -1,7 +1,14 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
+import useFirebase from '../../hooks/use-firebase'
+import { useUser } from '../../hooks/use-user'
+import AccountMenu from './AccountMenu/AccountMenu'
 
 const Navigation = () => {
+	const firebase = useFirebase()
+	const user = useUser()
+
+
 	return (
 		<nav className="flex items-center justify-between flex-wrap bg-teal-500 p-6">
 			<div className="flex items-center flex-shrink-0 text-white mr-6">
@@ -25,27 +32,29 @@ const Navigation = () => {
 			</div>
 			<div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
 				<div className="text-sm lg:flex-grow">
-					<Link
-						to={'/workouts'}
-						className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
-					>
-						Workouts
-					</Link>
-					<Link
-						to={'/exercises'}
-						className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
-					>
-						Exercises
-					</Link>
-					<Link
-						to={'/addWorkout'}
-						className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white"
-					>
-						Add Workout
-					</Link>
+					{user ? (
+						<Fragment>
+							<Link
+								to={'/workouts'}
+								className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
+							>
+								Workouts
+							</Link>
+							<Link
+								to={'/exercises'}
+								className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
+							>
+								Exercises
+							</Link>
+						</Fragment>
+					) : null}
 				</div>
 				<div>
-					<Link to={'signIn'}>Sign In</Link>
+					{user ? (
+						<AccountMenu />
+					) : (
+						<Link to={'/signIn'}>Sign In</Link>
+					)}
 				</div>
 			</div>
 		</nav>
