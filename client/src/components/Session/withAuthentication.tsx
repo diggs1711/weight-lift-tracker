@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'
 import useFirebase from '../../hooks/use-firebase'
-import { AuthUserContext } from '.'
+import { AuthUserContext } from '../Session'
 
 const withAuthentication = (Component: any) => () => {
 	const val = localStorage.getItem('authUser');
