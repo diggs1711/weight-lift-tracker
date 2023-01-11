@@ -14,7 +14,7 @@
     "@types/lodash": "^4.14.149",
     "apollo-server-cloud-functions": "^2.10.1",
     "graphql": "^14.6.0",
-    "knex": "^0.20.10",
+    "knex": "^2.4.0",
     "lodash": "^4.17.15",
     "pg": "^7.18.2",
     "typescript": "^3.8.2"
